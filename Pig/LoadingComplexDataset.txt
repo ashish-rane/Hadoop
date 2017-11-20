@@ -1,0 +1,4 @@
+grp_by_sym_year = LOAD 'output/pig/grp_by_sym_yr' AS (grp:tuple(sym:chararray, yr:int), stocks_b:(stocks_t:(exchange:chararray, symbol:chararray, date:datetime, open:float, high:float, low:float, close:float, volume:int, adj_close:float)));
+
+-- NOTE: We don't refer the inside MAX function as stocks_b.stocks_t.volume. (In fact we cannot access the stocks_t tuple;
+max_vol_by_year = FOREACH grp_by_syn_year GENERATE grp.sym, grp.yr, MAX(stocks_b.volume) as maxVol;

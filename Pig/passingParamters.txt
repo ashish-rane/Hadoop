@@ -1,0 +1,1 @@
+pig -param input='datafiles/hirw/stocks' -param output='output/pig/hirw/stocksTop10ByVol_2003' top10stocksbyavgvol_year2003.pig
