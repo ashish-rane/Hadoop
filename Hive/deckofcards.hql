@@ -1,0 +1,13 @@
+CREATE DATABASE IF NOT EXISTS cards;
+
+CREATE EXTERNAL TABLE cards.deck_of_cards(
+color STRING,
+suit STRING,
+pip STRING)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '|'
+STORED AS TEXTFILE;
+
+
+LOAD DATA LOCAL INPATH '/root/Projects/Hive/deckofcards.txt' INTO TABLE cards.deck_of_cards;
+

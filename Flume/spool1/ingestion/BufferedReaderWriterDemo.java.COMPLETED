@@ -1,0 +1,93 @@
+package com.learnjava.IO;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
+// TODO: Auto-generated Javadoc
+/**
+ * The Class BufferedReaderWriterDemo.
+ * The BufferedReader and Write adds buffer capablities to the underlying reader
+ * This means few system level read or write calls are required as they are 
+ * not made to retrieve each byte but rather several bytes/character at a time.
+ */
+public class BufferedReaderWriterDemo
+{
+  
+  /**
+   * Demo.
+   */
+  public static void Demo() 
+  {
+    FileReader fr = null;
+    BufferedReader br = null;
+    
+    FileWriter fw = null;
+    BufferedWriter bw = null;
+    
+    try
+    {
+
+      
+      fw = new FileWriter("/home/osboxes/J2EETutorial/TutorialsPoint/JavaProg/TestFileWriter.txt");
+      bw = new BufferedWriter(fw);
+      
+      bw.write("This is so easy");
+      bw.flush();
+      fw.close();
+      fw = null;
+      bw.close();
+      bw = null;
+      
+      fr = new FileReader("/home/osboxes/J2EETutorial/TutorialsPoint/JavaProg/TestFileWriter.txt");
+      br = new BufferedReader(fr);
+      String s;
+      while( (s = br.readLine()) != null)
+      {
+        System.out.println(s);
+      }
+    } 
+    catch (FileNotFoundException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    catch (IOException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    finally
+    {
+      try
+      {
+        if(fr != null)
+        {
+          fr.close();
+        }
+        if(br != null)
+        {
+          br.close();
+        }
+        
+        if(fw != null)
+        {
+          fw.close();
+        }
+        if(bw != null)
+        {
+          bw.close();
+        }
+      }
+      catch(Exception e)
+      {
+        e.printStackTrace();
+      }
+    }
+    
+   
+  }
+}

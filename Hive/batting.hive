@@ -1,0 +1,13 @@
+CREATE EXTERNAL TABLE IF NOT EXISTS batting(playerID STRING, year INT, runs INT)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LOCATION '/user/root/hive/data/batting';
+
+INSERT OVERWRITE LOCAL DIRECTORY '/tmp/hive/batting/outputs'
+SELECT grp.year, b.playerID, grp.maxruns FROM 
+batting b INNER JOIN
+(SELECT year,  max(runs) as maxruns FROM batting
+WHERE runs >0
+GROUP BY year)grp
+ON grp.year = b.year AND grp.maxruns = b.runs
+ORDER BY grp.year;

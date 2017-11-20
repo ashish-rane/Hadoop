@@ -1,0 +1,1 @@
+CREATE TABLE retail_demo.orders_ctas  ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS ORC AS SELECT * FROM retail_db.orders;

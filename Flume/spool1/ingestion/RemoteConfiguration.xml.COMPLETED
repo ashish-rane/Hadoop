@@ -1,0 +1,607 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Section xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="root" xmlns="http://schemas.keaneaustralia.com/Nts">
+  
+  <!--
+  SECTION: HHD-ID Application Configuration
+  -->
+  <Section name ="Application">
+    
+    <!-- The number of times an operator may log in before their operator application is blocked -->
+    <Key name="MaxFailLogon" value="3"/>
+
+    <!-- The amount of time an operator may leave the device logged-in on a dock (powered) before it will be 
+         automatically logged off -->
+    <Key name="MaxIdleForceLogOffInMinutes" value="180"/>
+
+    <!-- The amount of space free on the storage card below which a warning will be triggered (as a percentage). -->
+    <Key name="StorageLowThreshold" value="5"/>
+
+    <!-- The amount of space free on the storage card below which a critical warning will be triggered (as a percentage). -->
+    <Key name="StorageCriticalThreshold" value="2"/>
+
+    <!-- The host-name or IP address of the NTP (Time-Sync) server -->
+    <Key name="NtpServer" value="liventsarc.ntsprod.local"/>
+
+    <!-- The number of minutes between time synchronisations -->
+    <Key name="TimeSyncIntervalMins" value="30" />
+
+    <!-- The number of days the device will go without a valid time-sync before it will enter restricted mode. -->
+    <Key name="MaxDaysWithoutTimeSync" value ="7" />
+
+    <!-- The number of days the device will go without a successful server communication before it will enter 
+         restricted mode. -->
+    <Key name="MaxOfflineDays" value="7"/>
+    
+    <!-- The number of times the startup process can fail before the device must be manually inspected and
+         recovered by a technician. -->
+    <Key name="MaxStartupFailures" value="3"/>
+    
+    <!-- The device type assignment from the NTS Back-Office -->
+    <Key name="DeviceType" value="HHD"/>
+
+    <!-- Controls the 'key suspend' feature, where a button can be held down to put the device into suspend mode -->
+    <Key name="KeySuspendTimer" enabled="True" interval="5" keymap="F18"/>
+         
+    <Key name="CheckDeviceHealthInterval" value="900" />
+  </Section>
+
+  <!-- 
+  SECTION: Service Manager
+  
+  This section defines the list of application services that will be started by the 
+  service manager at application startup.
+  
+  Each service contains the following keys:
+  - "interface" : The fully-qualified name of the interface that describes the service.
+  - "interface_assembly" : The path to the assembly that contains the interface.
+  - "implementation_assembly" : The path to the assembly that contains the implementation of the service.
+  - "priority" : A number defining the order in which the service is loaded 
+                 (NOTE: duplicates are loaded in no particular order)
+  -->
+  <Section name="ServiceManager">
+    
+    <Section name="PowerService">
+      <Key name="interface" value="Nts.Services.Power.IPowerService"/>
+      <Key name="interface_assembly" value="Nts.ServicesCe.dll"/>
+      <Key name="implementation_assembly" value="Services\Nts.Services.PowerCe.dll"/>
+      <Key name="priority" value="1"/>
+    </Section>
+    <Section name="HMIService">
+      <Key name="interface" value="Nts.Services.HMI.IHMIService"/>
+      <Key name="interface_assembly" value="Nts.ServicesCe.dll"/>
+      <Key name="implementation_assembly" value="Services\Nts.Services.HMICe.dll"/>
+      <Key name="priority" value="2"/>
+    </Section>
+    <Section name="CommunicationsService">
+      <Key name="interface" value="Nts.Services.Communications.ICommunicationsService"/>
+      <Key name="interface_assembly" value="Nts.ServicesCe.dll"/>
+      <Key name="implementation_assembly" value="Services\Nts.Services.CommunicationsCe.dll"/>
+      <Key name="priority" value="3"/>
+    </Section>
+
+    <Section name="TaskService">
+      <Key name="interface" value="Nts.Services.Tasks.ITaskService"/>
+      <Key name="interface_assembly" value="Nts.ServicesCe.dll"/>
+      <Key name="implementation_assembly" value="Services\Nts.Services.TasksCe.dll"/>
+      <Key name="priority" value="4"/>
+    </Section>
+
+    <Section name="UploadService">
+      <Key name="interface" value="Nts.Services.Upload.IUploadService"/>
+      <Key name="interface_assembly" value="Nts.ServicesCe.dll"/>
+      <Key name="implementation_assembly" value="Services\Nts.Services.UploadCe.dll"/>
+      <Key name="priority" value="5"/>
+    </Section>
+
+    <Section name="UpdateService">
+      <Key name="interface" value="Nts.Services.Update.IUpdateService" />
+      <Key name="interface_assembly" value="Nts.ServicesCe.dll"/>
+      <Key name="implementation_assembly" value="Services\Nts.Services.UpdateCe.dll"/>
+      <Key name="priority" value="6"/>
+    </Section>
+
+    <Section name="ProductConfigService">
+      <Key name="interface" value="Nts.Services.ProductConfig.IProductConfigService"/>
+      <Key name="interface_assembly" value="Nts.ServicesCe.dll"/>
+      <Key name="implementation_assembly" value="Services\Nts.Services.ProductConfigCe.dll"/>
+      <Key name="priority" value="7"/>
+    </Section>
+
+    <Section name="PermissionService">
+      <Key name="interface" value="Nts.Services.Permission.IPermissionService"/>
+      <Key name="interface_assembly" value="Nts.ServicesCe.dll"/>
+      <Key name="implementation_assembly" value="Services\Nts.Services.PermissionCe.dll"/>
+      <Key name="priority" value="8"/>
+    </Section>
+
+    <Section name="NetworkPrintService">
+      <Key name="interface" value="HHD.ID.Services.Printer.INetworkPrintService"/>
+      <Key name="interface_assembly" value="HHD.ID.EXE"/>
+      <Key name="implementation_assembly" value="HHD.ID.EXE"/>
+      <Key name="priority" value="9"/>
+    </Section>
+
+    <Section name="StpService">
+      <Key name="interface" value="Nts.Services.Stp.IStpService"/>
+      <Key name="interface_assembly" value="Nts.ServicesCe.dll"/>
+      <Key name="implementation_assembly" value="Services\Nts.Services.StpCe.dll"/>
+      <Key name="priority" value="10"/>
+    </Section>
+
+    <Section name="RoncService">
+      <Key name="interface" value="HHD.ID.Services.Ronc.IRoncService"/>
+      <Key name="interface_assembly" value="HHD.ID.exe"/>
+      <Key name="implementation_assembly" value="HHD.ID.exe"/>
+      <Key name="priority" value="11"/>
+    </Section>
+
+  </Section>
+
+  <!-- 
+  ********************************************************
+  Service-Specific Configuration Sections
+  ********************************************************
+  -->
+
+  <!--
+  SECTION: Power Service
+  -->
+  <Section name="PowerService">
+    
+    <!--Defines the number of seconds that the 'auto-suspend' feature will wait before suspending the device.-->
+    <Key name="SuspendTimeout" value="60" />    
+
+    <!--Defines the percentage of battery below which the device will be considered to be 'CRITICAL'-->
+    <Key name="BatteryCriticalThreshold" value="15" />
+
+    <!--Defines the percentage of battery below which the device will be considered to be 'LOW'-->
+    <Key name="BatteryLowThreshold" value="25" />
+
+    <!--Defines the percentage of battery below which the device will be considered to be 'MEDIUM'-->
+    <Key name="BatteryMidThreshold" value="65" />
+
+    <!--Defines the percentage of battery above which the device will be considered to be 'HIGH'-->
+    <!--NOTE: A battery value above this will be considered 'FULL' -->
+    <Key name="BatteryHighThreshold" value="89" />
+
+    <!-- The number of seconds elapsed before the 'inactivity timer' will be reset when supressed. -->
+    <Key name="SuppressIdleInterval" value="10"/>
+  </Section>
+
+
+  <!--
+  SECTION: Communications Service
+  -->
+  <Section name="CommunicationsService">
+    
+    <Section name="Connections">
+      <Section name="PRINTER">
+        <Key name="ConnectionType" value="ETHERNET"/>
+        <Key name="Interface" value="SMSC95001" />
+        <Key name="DhcpEnabled" value="False"/>
+        <Key name="IpAddress" value="192.168.1.*"/>
+        <Key name="Subnet" value="255.255.255.0"/>
+        <Key name="Gateway" value=""/>
+        <Key name="Dns1" value=""/>
+        <Key name="Dns2" value=""/>
+        <Key name="Wins1" value=""/>
+        <Key name="Wins2" value=""/>
+        <Key name="ConnectionTimeoutMs" value="5000"/>
+      </Section>
+
+      <!-- This connection represents the Ethernet adapter on the Quad-Dock that connects to the production network -->
+      <Section name="VTS.FIXED">
+        <Key name="ConnectionType" value="ETHERNET"/>
+        <Key name="Interface" value="SMSC95001" />
+        <Key name="DhcpEnabled" value="True"/>
+        <Key name="ConnectionTimeoutMs" value="5000"/>
+      </Section>
+
+      <!-- This connection represents the Wireless adapter that connects to the production network -->
+      <!-- NOTE: The connection must be configured and enabled before this will be detected. This version does not
+                 officially support WiFi so there is no capability to configure it at all. -->
+      <Section name="VTS.WIFI">
+        <Key name="ConnectionType" value="WIFI"/>
+        <Key name="Interface" value="SDCSD40N1" />
+        <Key name="DhcpEnabled" value="True"/>
+        <Key name="ConnectionTimeoutMs" value="5000"/>
+      </Section>
+
+      <!-- This connection represents GPRS/3G/HSDPA link and the Interface is the name of the GPRS profile in WM6.5 -->
+      <!-- NOTE: The actual GPRS profile is configured via GPRS.XML under /Flash Disk/Startup -->
+      <Section name="VTS.MOBILE">
+        <Key name="ConnectionType" value="MOBILE"/>
+        <Key name="Interface" value="TELSTRA"/>
+        <Key name="DhcpEnabled" value="True"/>
+        <Key name="ConnectionTimeoutMs" value="20000"/>
+      </Section>
+    </Section>
+
+    <Section name="Networks">
+      <Section name="VTS">
+        <!--<Key name="Connection0" value="VTS.WIFI" priority="0"/>-->
+        <Key name="Connection0" value="VTS.FIXED" priority="0"/>
+        <Key name="Connection1" value="VTS.MOBILE" priority="1"/>
+        <Key name="TestHost" value="liventsarc.ntsprod.local"/>
+      </Section>
+      <Section name="RONC">
+        <Key name="Connection0" value="PRINTER" priority="0"/>
+        <Key name="TestHost" value="192.168.1.10"/>
+      </Section>
+    </Section>
+  </Section>
+
+  <!-- 
+  SECTION: Task Service
+  -->
+  <Section name="TaskService">
+    <Key name="MonitorInterval" value="1000"/>
+    <Key name="AutoWakeupInterval" value="60"/>
+  </Section>
+
+  <!-- 
+  SECTION: HMI Service
+  
+  This section devices the view/controller pairs that make up the HMI in the application.
+  Each view/controller pair has its own section with the following elements:
+  - name - The identifier by which this view/controller pair will be referenced
+  - controller - The implementation assembly and fully-qualified name of the controller
+  - view - The implementation assembly and fully-qualified name of the view
+  - precache - If true, this view will be pre-cached to speed up load time
+  -->
+  <Section name ="HMIService">
+
+    <Key name="DefaultView" value="Splash"/>
+    
+    <Section name="Mappings">
+      
+      <Section name="Splash">
+        <Key name="controller" value="HHD.ID.HMI.SplashController" assembly="..\HHD.ID.EXE"/>
+        <Key name="view" value="HHD.ID.HMI.SplashView" assembly="..\HHD.ID.EXE"/>
+        <Key name="precache" value="false"/>
+      </Section>
+
+      <Section name="Authentication">
+        <Key name="controller" value="HHD.ID.HMI.AuthenticationController" assembly="..\HHD.ID.EXE"/>
+        <Key name="view" value="HHD.ID.HMI.AuthenticationView" assembly="..\HHD.ID.EXE"/>
+        <Key name="precache" value="true"/>
+      </Section>
+
+      <Section name="AssetManagement">
+        <Key name="controller" value="HHD.ID.HMI.AssetManagementController" assembly="..\HHD.ID.EXE"/>
+        <Key name="view" value="HHD.ID.HMI.AssetManagementView" assembly="..\HHD.ID.EXE"/>
+      </Section>
+
+      <Section name="ConfigureLocation">
+        <Key name="controller" value="HHD.ID.HMI.ConfigureLocationController" assembly="..\HHD.ID.EXE"/>
+        <Key name="view" value="HHD.ID.HMI.ConfigureLocationView" assembly="..\HHD.ID.EXE"/>
+        <Key name="precache" value="true"/>
+      </Section>
+
+      <Section name="MainMenu">
+        <Key name="controller" value="HHD.ID.HMI.MainMenuController" assembly="..\HHD.ID.EXE"/>
+        <Key name="view" value="HHD.ID.HMI.MainMenuView" assembly="..\HHD.ID.EXE"/>
+        <Key name="precache" value="true"/>
+      </Section>
+
+      <Section name="SelectLocation">
+        <Key name="controller" value="HHD.ID.HMI.SelectLocationController" assembly="..\HHD.ID.EXE"/>
+        <Key name="view" value="HHD.ID.HMI.SelectLocationView" assembly="..\HHD.ID.EXE"/>
+        <Key name="precache" value="true"/>
+      </Section>
+
+      <Section name="SelectExplicitZone">
+        <Key name="controller" value="HHD.ID.HMI.SelectExplicitZoneController" assembly="..\HHD.ID.EXE"/>
+        <Key name="view" value="HHD.ID.HMI.SelectExplicitZoneView" assembly="..\HHD.ID.EXE"/>
+      </Section>
+
+      <Section name="CardContents">
+        <Key name="controller" value="HHD.ID.HMI.CardContentsController" assembly="..\HHD.ID.EXE"/>
+        <Key name="view" value="HHD.ID.HMI.CardContentsView" assembly="..\HHD.ID.EXE"/>
+      </Section>
+      
+      <Section name="CheckEntitlement">
+        <Key name="controller" value="HHD.ID.HMI.CheckEntitlementController" assembly="..\HHD.ID.EXE"/>
+        <Key name="view" value="HHD.ID.HMI.CheckEntitlementView" assembly="..\HHD.ID.EXE"/>
+      </Section>
+
+      <Section name="StoreCardDetails">
+        <Key name="controller" value="HHD.ID.HMI.StoreCardDetailsController" assembly="..\HHD.ID.EXE"/>
+        <Key name="view" value="HHD.ID.HMI.StoreCardDetailsView" assembly="..\HHD.ID.EXE"/>
+      </Section>
+
+      <Section name="Maintenance">
+        <Key name="controller" value="HHD.ID.HMI.MaintenanceController" assembly="..\HHD.ID.EXE"/>
+        <Key name="view" value="HHD.ID.HMI.MaintenanceView" assembly="..\HHD.ID.EXE"/>
+      </Section>
+
+      <Section name="SystemReport">
+        <Key name="controller" value="HHD.ID.HMI.SystemReportController" assembly="..\HHD.ID.EXE"/>
+        <Key name="view" value="HHD.ID.HMI.SystemReportView" assembly="..\HHD.ID.EXE"/>
+      </Section>
+
+      <Section name="RoncManagement">
+        <Key name="controller" value="HHD.ID.HMI.RoncManagementController" assembly="..\HHD.ID.EXE"/>
+        <Key name="view" value="HHD.ID.HMI.RoncManagementView" assembly="..\HHD.ID.EXE"/>
+      </Section>
+
+      <Section name="ChangePin">
+        <Key name="controller" value="HHD.ID.HMI.ChangePinController" assembly="..\HHD.ID.EXE"/>
+        <Key name="view" value="HHD.ID.HMI.ChangePinView" assembly="..\HHD.ID.EXE"/>
+      </Section>
+
+      <Section name="ResetPin">
+        <Key name="controller" value="HHD.ID.HMI.ResetPinController" assembly="..\HHD.ID.EXE"/>
+        <Key name="view" value="HHD.ID.HMI.ResetPinView" assembly="..\HHD.ID.EXE"/>
+      </Section>
+
+      <Section name="Decommission">
+        <Key name="controller" value="HHD.ID.HMI.DecommissionController" assembly="..\HHD.ID.EXE"/>
+        <Key name="view" value="HHD.ID.HMI.DecommissionView" assembly="..\HHD.ID.EXE"/>
+      </Section>
+
+      <Section name="Shutdown">
+        <Key name="controller" value="HHD.ID.HMI.ShutdownController" assembly="..\HHD.ID.EXE"/>
+        <Key name="view" value="HHD.ID.HMI.ShutdownView" assembly="..\HHD.ID.EXE"/>
+      </Section>
+
+    </Section>
+  </Section>
+
+  <!-- 
+  SECTION: Upload Service
+  -->
+  <Section name="UploadService">
+    <Key name="UploadRootPath" value ="Upload"/>
+    <Key name="TmiSchemaVersion" value="7.1"/>
+    <Key name="UploadFileRetentionPeriod" value="2" />
+    <Key name="FtpCredentials" username="ftpuser" password="P@ssw0rd"/>
+    <Key name="FtpUploadPath" value="ftp://vtsdmsdev.ntsprod.local/uploadedfiles/NTS" />
+    <Key name="InstantJobInterval" value="300" />
+    <Key name="BatchJobInterval" value="900" />
+    <Key name="UploadInterval" value="1800" />
+    <Key name="InstantJobTimeout" value="300" />
+    <Key name="BatchJobTimeout" value="300" />
+    <Key name="UploadJobTimeout" value="1800" />
+    <Key name="MaxDaysWithoutSuccessfullUpload" value="7" />
+    <Key name="ReportingDeviceType" value="HHDMc"/>
+  </Section>
+
+  <!--
+  SECTION: Permission Service
+  -->
+  <Section name="PermissionService">
+    <Key name="DatabasePath" value="Permissions\Database"/>
+  </Section>
+
+  <!--
+  SECTION: STP (Smartcard) Service
+  -->
+  <Section name="StpService">
+    <!-- SWSam configuration -->
+    <!--
+    <Key name="SamDll" value="Services\Nts.Services.StpCe.dll"/>
+    <Key name="SamMasterKey" value="00-01-02-03-04-05-06-07-08-09-0A-0B-0C-0D-0E-0F"/>
+    -->
+    <!-- HWSam configuration -->
+    <Key name="SamDll" value="Services\Nts.Services.Stp.Device.HidCe.dll"/>
+    <Key name="SamMasterKey" value="99-99-99-99-99-99-99-99-AA-AA-AA-AA-AA-AA-AA-AA"/>
+
+    <Key name="CacheFactoryDll" value="Services\Nts.Services.Stp.BusinessCe.dll"/>
+    <Key name="MaxReaderFailures" value="10"/>
+    <Key name="MaxReadsBeforeReportInvalid" value="3"/>
+    <Key name="FailuresToFailSafeRead" value="1"/>
+    <Key name="EnableFailSafeRead" value="true"/>
+    <Key name="EnableLDTSigning" value="true" />
+
+    <!--Cache Settings-->
+    <Section name="Cache">
+      <Key name="LDTSign" keyVersion="1" />
+      <Key name="DeviceTransactionData" keyVersion="1" />
+      <Key name="DSCSale" keyVersion="1"/>
+      <Key name ="LLSCCacheInit" keyVersion="1"/>
+      <Key name="CardAppInit" keyVersion="1"/>
+      <Key name="TAppInit" keyVersion="1"/>
+      <Key name="OAppInit" keyVersion="1"/>
+      <Key name ="Snapshot" location="" maxSnapshotFiles="100"/>
+    </Section>
+    
+    <!--SAM Keys sets -->
+    <Section name="RequiredSAMKeys">
+      <Key name="KeyNumbers" value="131,163,165,193,194,196,197,198,199,200,201,202"/>
+    </Section>
+
+    <!--Reader Control section-->
+    <Section name="ReaderControl">
+      <Key name="ReaderDll" value="Services\Nts.Services.Stp.Device.HidCe.dll"/>
+      <Key name="PollingInterval" value="10"/>
+      <Key name="SavePower" value="true"/>
+      <Key name="LeftCount" value="5"/>
+      <Key name="MultiLeftCount" value="5"/>
+
+      <!--The following key is used to identify the section for the reader settings-->
+      <Key name="ReaderName" value="Hid" />
+
+      <!--Reader Settings. The section name must match the Reader name Key above-->
+      <Section name ="Hid">
+        <Key name="ComPort" value="COM4"/>
+        <Key name="AirSpeed" value="0x01"/>
+        <Key name="CommTimeout" value="300"/>
+        <Key name="Baudrate" value="460800"/>
+        <Key name="Protocol" value="1"/>
+        <Key name="EnableSamSwitch" value="true"/>
+        <Key name="SamPosition" value="1"/>
+        <Key name ="NumGetDataRetry" value="1"/>
+        <Key name="TMRHighForSAM" value = "0x40"/>
+        <Key name="FiDi" value="0x97"/>
+        <Key name="CardDetectionCyclesPerSAMPoll" value="5000" />
+
+        <Section name="Ultralight">
+          <Key name="WriteLocksAndOTP" value="true" />
+        </Section>
+
+        <!--MultiISO 1.1 settings-->
+        <Section name="MultiISO 1.1">
+          <Key name="UseDefaultAntenna" value="true"/>
+          <Section name="EEPROM">
+            <Key name="ResetOffTime" register="0x14" value="0x05"/>
+            <Key name="ResetRecoveryTime" register="0x15" value="0x05"/>
+            <Key name="SelTimeoutISO14443A" register="0x17" value="0x05"/>
+            <Key name="SelTimeoutISO14443B" register="0x18" value="0x50"/>
+            <Key name="SelTimeoutSR176" register="0x19" value="0x50"/>
+            <Key name="StationId" register="0x0A" value="0x01"/>
+            <Key name="CmdGuardTime" register="0x0D" value="0x05"/>
+            <Key name="OperationMode" register="0x0E" value="0x81"/>
+            <Key name="TMRlow" register="0x10" value="0x04"/>
+            <Key name="TMRhigh" register="0x11" value="0x01"/>
+            <Key name="Protocol1" register="0x0B" value="0xCA"/>
+            <Key name="Protocol2" register="0x13" value="0x01"/>
+            <Key name="Protocol3" register="0x1B" value="0x40"/>
+          </Section>
+        </Section>
+
+
+        <!--MultiISO 1.2.5 settings-->
+        <Section name="MultiISO 1.2.5">
+          <Key name="UseDefaultAntenna" value="true"/>
+          <Section name="EEPROM">
+            <Key name="ResetOffTime" register="0x14" value="0x05"/>
+            <Key name="ResetRecoveryTime" register="0x15" value="0x05"/>
+            <Key name="SelTimeoutISO14443A" register="0x17" value="0x05"/>
+            <Key name="SelTimeoutISO14443B" register="0x18" value="0x50"/>
+            <Key name="SelTimeoutSR176" register="0x19" value="0x50"/>
+            <Key name="StationId" register="0x0A" value="0x01"/>
+            <Key name="CmdGuardTime" register="0x0D" value="0x05"/>
+            <Key name="OperationMode" register="0x0E" value="0x81"/>
+            <Key name="TMRlow" register="0x10" value="0x04"/>
+            <Key name="TMRhigh" register="0x11" value="0x01"/>
+            <Key name="Protocol1" register="0x0B" value="0xCA"/>
+            <Key name="Protocol2" register="0x13" value="0x01"/>
+            <Key name="Protocol3" register="0x1B" value="0x40"/>
+            <Key name="Protocol4" register="0x20" value="0x02" />
+          </Section>
+        </Section>
+      </Section>
+
+      <!--Arcontia Reader Settings-->
+      <Section name="Arcontia">
+        <Key name="ComPort" value="COM4" />
+        <Key name="CommTimeout" value ="300" />
+        <Key name="BaudRate" value="460800" />
+        <Key name="Model" value="Arc1300"/>
+        <Key name="SamPosition" value="1"/>
+        <Key name="AirSpeed" value="0x04"/>
+        <Key name="EnableSamSwitch" value="true"/>
+        <Section name="UltraLight">
+          <Key name="WriteLocksAndOTP" value="true" />
+        </Section>
+      </Section>
+    </Section>
+  </Section>
+
+  <!--
+  SECTION: Product Configuration Service
+  -->
+  <Section name="ProductConfigService">
+    <Key name = "ProductConfigServiceRoot" value="ProductConfiguration"/>
+    <Key name = "ProductConfigVersionsFile" value="ProductConfigVersions.xml" />
+    <Key name = "DatabaseSchemaScript" value="sql\ProductConfigDatabaseSchema.sql"/>
+    <Key name = "DatabaseStaticDataScript" value ="sql\StaticDataDefinition.sql" />
+    <Key name = "ProductConfigXMLPath" value="xml\"/>
+  </Section>
+
+  <!-- 
+  SECTION: Update Service
+  -->
+  <Section name="UpdateService">
+    <Key name="TerminalInfoUrl" value="http://vtsdmsdev.ntsprod.local/dmsstub/tem/terminalinfo" />
+    <Key name="UpdateCheckInterval" value="1800"/>
+    <Key name="MaxDaysWithoutSuccessfullCheck" value="7" />
+    <Key name="PackageRententionPeriod" value="2" />
+    <Key name="FtpCredentials" username="ftpuser" password="P@ssw0rd"/>
+    <Key name="UpdateTaskTimeout" value="1800" />
+    <Key name="UpdateRootPath" value="Update" />
+    <Key name="ActivationCheckInterval" value="900"/>
+    <Key name="SkipPackageChecksumValidation" value="true" />
+    <Key name="DeviceManifestFile" value="device.manifest"/>
+    <Key name="DownloadManifestFile" value="download.manifest"/>
+    <Key name="InstalledManifestFile" value="installed.manifest" />
+    <Section name="Categories">
+    	<Key name="Software" value="Software" />
+    	<Key name="Bootstrapper" value="Bootstrapper" />
+    	<Key name="RemoteConfiguration" value="RemoteConfiguration" />
+    	<Key name="ProductConfiguration" value="ProductConfiguration" />
+    	<Key name="Permission" value="Permission" />
+    </Section>
+
+
+    <!--Installers-->
+    <Section name ="Installers">
+
+      <!--Action List-->
+      <!--<Section name="ActionList">
+        <Key name="Installer" value="ActionListInstaller.dll" />
+        <Key name="targetDirectory" value="\Storage Card\Kamco\HHD-ID\Stp\Actionlist\" />;
+      </Section>-->
+
+      <!--Boot strapper-->
+      <Section name ="Bootstrapper">
+        <Key name="Installer" value="Nts.Installer.BootstrapperCe.dll" />
+        <Key name="TargetDirectory" value="\Flash Disk\Program Files\Nttdata\Bootstrapper" />
+      </Section>
+
+      <!--Software-->
+
+      <Section name ="Software">
+        <Key name="Installer" value="Nts.Installer.SoftwareCe.dll" />
+        <Key name="TargetDirectory" value="\Flash Disk\Program Files\Nttdata\HHD-ID" />
+        <Key name="PostProcessDirectory" value="PostProcess" />
+      </Section>
+
+
+      <!--ProductConfiguration-->
+      <Section name="ProductConfiguration">
+        <Key name="Installer" value="Nts.Installer.ProductConfigCe.dll" />
+        <Key name="TargetDirectory" value="ProductConfiguration\Database" />
+        <Key name="TempDirectory" value="ProductConfiguration\Temp" />
+        <Key name ="ProductConfigVersionsFile" value="ProductConfiguration\ProductConfigVersions.xml" />
+      </Section>
+
+      <!--Permission-->
+      <Section name ="Permission">
+        <Key name="Installer" value="Nts.Installer.PermissionCe.dll" />
+        <Key name="TargetDirectory" value="Permissions\Database" />
+      </Section>
+
+      <!--Remote Configuration-->
+      <Section name ="RemoteConfiguration">
+        <Key name="Installer" value="Nts.Installer.RemoteConfigurationCe.dll" />
+      </Section>
+
+    </Section>
+
+  </Section>
+
+  <!--
+  SECTION: Ronc Service
+  -->
+  <Section name="RoncService">
+    <Key name="RoncRetentionDays" value="14" />
+    <Key name ="RoncSendInterval" value ="900" />
+    <Key name="RoncRootPath" value="Ronc"/>
+    <Key name="RoncServerTimeout" value="30000" />
+    <!--<Key name="RoncServiceURL" value="http://10.0.18.62/AOTransmitServices/RONCReport.asmx"/>-->
+    <Key name="RoncServiceURL" value="http://10.103.246.72/AOTransmitServices/RONCReport.asmx"/>
+    <!--<Key name="RoncServiceURL" value="http://10.0.19.52/RONCReportResp/RONCresponse.asmx"/>-->         
+  </Section>
+
+  <!-- 
+  SECTION: Network Print Service
+  -->
+  <Section name="NetworkPrintService">
+    <Key name="IPAddress" value="192.168.1.10"/>
+    <Key name="Port" value="9100"/>
+  </Section>
+
+</Section>
+

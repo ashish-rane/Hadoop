@@ -1,0 +1,1 @@
+nohup flume-ng agent -n MyAgent -c /etc/flume/conf -f flume1.properties >flume1.out 2>flume1.err &
