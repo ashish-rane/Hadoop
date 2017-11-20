@@ -1,0 +1,26 @@
+
+
+-- FIRST METHOD
+-- The hive import should be done only once to create the table in hive and its metastore and import the initial data. 
+sqoop import --connect jdbc:mysql://sandbox.hortonworks.com/retail_db --username root --password hadoop --table products --create-hive-table --hive-import --hive-table retail_demo.products --fields-terminated-by ',' --null-string '\\N' --null-non-string '\\N' -m 1
+
+-- We create incremental scoop job to import the data into the warehouse directory created by the initial import (its registered in metastore so can be queried using Hive Shell.
+-- Note we have to specify the --last-value as the last value of primary key to start at. This is because we have already imported initial data into hive using about query.
+sqoop job --create products_append_hive -- import --connect jdbc:mysql://sandbox.hortonworks.com/retail_db --username root --password hadoop --table products -m 1 --incremental append --check-column product_id --last-value 1350 --target-dir /apps/hive/warehouse/retail_demo.products/  --fields-terminated-by ','  --null-string '\\N' --null-non-string '\\N'
+
+
+
+-- SECOND METHOD
+-- 1. CREATE a Database and an external table in Hive
+
+use retail_db_test;
+CREATE EXTERNAL TABLE products (product_id int, product_category_id int, product_name string, product_description string, product_price float, product_image string)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+LOCATION '/user/root/hive/data/retail_db_test/products';
+
+-- 2. Create a incremental scoop job which imports the data into an HDFS location where the external table reads its data.
+sqoop job --create products_append_hive -- import jdbc:mysql://sandbox.hortonworks.com/retail_db --username root --password hadoop --table products -m 1 --incremental append --check-column product_id --last-value 0 --warehouse-dir /user/root/hive/data/retail_db_test --null-string '\\N' --null-non-string '\\N'
+
+
+-- 3. Run the scoop job. (NOTE: --last-value should be 0 in this case. Since no data was imported at Point 1.

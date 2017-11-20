@@ -1,0 +1,49 @@
+{
+  "type" : "record",
+  "name" : "stocks",
+  "doc" : "Sqoop import of stocks",
+  "fields" : [ {
+    "name" : "id",
+    "type" : [ "null", "int" ],
+    "default" : null,
+    "columnName" : "id",
+    "sqlType" : "4"
+  }, {
+    "name" : "symbol",
+    "type" : [ "null", "string" ],
+    "default" : null,
+    "columnName" : "symbol",
+    "sqlType" : "12"
+  }, {
+    "name" : "name",
+    "type" : [ "null", "string" ],
+    "default" : null,
+    "columnName" : "name",
+    "sqlType" : "12"
+  }, {
+    "name" : "trade_date",
+    "type" : [ "null", "long" ],
+    "default" : null,
+    "columnName" : "trade_date",
+    "sqlType" : "91"
+  }, {
+    "name" : "close_price",
+    "type" : [ "null", "string" ],
+    "default" : null,
+    "columnName" : "close_price",
+    "sqlType" : "3"
+  }, {
+    "name" : "volume",
+    "type" : [ "null", "int" ],
+    "default" : null,
+    "columnName" : "volume",
+    "sqlType" : "4"
+  }, {
+    "name" : "updated_time",
+    "type" : [ "null", "long" ],
+    "default" : null,
+    "columnName" : "updated_time",
+    "sqlType" : "93"
+  } ],
+  "tableName" : "stocks"
+}

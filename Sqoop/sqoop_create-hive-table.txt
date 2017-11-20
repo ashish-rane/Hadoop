@@ -1,0 +1,1 @@
+sqoop create-hive-table --connect jdbc:mysql://sandbox.hortonworks.com:3306/retail_db --username root --password hadoop --table customers -m 2 --fields-terminated-by ',';

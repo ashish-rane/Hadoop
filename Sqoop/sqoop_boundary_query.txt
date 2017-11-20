@@ -1,0 +1,9 @@
+
+-- Simulate importing of department except teh first and last row using boundary query
+
+-- HIVE import
+sqoop import --connect jdbc:mysql://sandbox.hortonworks.com:3306/retail_db --username root --password hadoop --table departments --hive-import --hive-table retail_demo.departments --boundary-query 'select MIN(department_id) + 1, MAX(department_id) -1 FROM departments' 
+
+
+-- HDFS import
+sqoop import --connect jdbc:mysql://sandbox.hortonworks.com:3306/retail_db --username root --password hadoop --table departments --warehouse-dir hdfs://sandbox.hortonworks.com:8020/user/root/sqoop_temp_test/ --boundary-query 'select MIN(department_id) + 1, MAX(department_id) - 1 FROM departments' -m 2;

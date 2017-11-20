@@ -1,0 +1,1 @@
+sqoop job --create append_products -- import --connect jdbc:mysql://sandbox.hortonworks.com/retail_db --username root --password hadoop  --table products --check-column product_id --incremental append --last-value 0 --target-dir sqoop_import_test -m 1

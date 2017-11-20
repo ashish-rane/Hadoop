@@ -1,0 +1,14 @@
+-- Import departments into hdfs
+sqoop import jdbc:mysql://sandbox.hortonworks.com:3306/retail_db --username root --password hadoop --table departments --target-dir hdfs://sandbox.hortonworks.com:8020/user/root/sqoop_temp_test1/departments_append --append -m 1;
+
+-- Again import the same departments into hdfs. Without the --append this would have failed. --append indicates that if the directory exist then just add new files to it. Duplicates can be present in teh data.
+-- Use sqoop merge to remove duplicates
+sqoop import jdbc:mysql://sandbox.hortonworks.com:3306/retail_db --username root --password hadoop --table departments --target-dir hdfs://sandbox.hortonworks.com:8020/user/root/sqoop_temp_test1/departments_append --append -m 1;
+
+
+-- To Merge we first need to generate the jar file from the source table
+sqoop codegen --connect jdbc:mysql://sandbox.hortonworks.com:3306/retail_db --username root --password hadoop --table departments --outdir /root/Projects/sqoop/code_gen-departments;
+
+-- SQoop Merge
+sqoop merge --new-data  hdfs://sandbox.hortonworks.com:8020/user/root/sqoop_temp_test1/departments_append/part-m-00001 --onto  hdfs://sandbox.hortonworks.com:8020/user/root/sqoop_temp_test1/departments_append/part-m-00000 --target-dir hdfs://sandbox.hortonworks.com:8020/user/root/sqoop_temp_test1/departments_merged --jar-file /root/Projects/sqoop/code_gen-departments/departments.jar --class-name departments --merge-key department_id;
+

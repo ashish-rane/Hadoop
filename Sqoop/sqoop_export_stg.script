@@ -1,0 +1,35 @@
+mqsql> CREATE DATABASE retail_db_sqoop;
+
+
+CREATE TABLE `departments` (
+  `department_id` int(11) NOT NULL,
+  `department_name` varchar(45) NOT NULL,
+  PRIMARY KEY (`department_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 
+
+CREATE TABLE `departments_stg` (
+  `department_id` int(11) NOT NULL,
+  `department_name` varchar(45) NOT NULL,
+  PRIMARY KEY (`department_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 
+
+
+sqoop import-all-tables --connect jdbc:mysql://sandbox.hortonworks.com/retail_db --username root --password hadoop --hive-import --hive-database retail_db --fields-terminated-by ',' --null-string '\\N' --null-non-string '\\N';
+
+sqoop export --connect jdbc:mysql://sandbox.hortonworks.com/retail_db_sqoop --username root --password hadoop  --table departments  --staging-table departments_stg --clear-staging-table --export-dir /apps/hive/warehouse/retail_db.db/departments
+
+
+--Doing export in update only mode. Note: Staging table cannot be used in update mode.
+sqoop export --connect jdbc:mysql://sandbox.hortonworks.com/retail_db_sqoop --username root --password hadoop  --table departments  --export-dir /apps/hive/warehouse/retail_db.db/departments --update-key department_id --update-mode updateonly
+
+
+-- Export in upsert mode
+sqoop export --connect jdbc:mysql://sandbox.hortonworks.com/retail_db_sqoop --username root --password hadoop  --table departments  --export-dir /apps/hive/warehouse/retail_db.db/departments --update-key department_id --update-mode allowinsert
+
+
+-- Export to Table without primary key. It will do only inserts even if the updatekey is present in the target table creating duplicate entries for department id
+sqoop export --connect jdbc:mysql://sandbox.hortonworks.com:3306/retail_db_sqoop --username root --password hadoop --table department_export --export-dir /apps/hive/warehouse/retail_db.db/departments --update-key department_id --update-mode allowinsert
+
+
+-- Export from Hive to RDBMS when the import to Hive was done with default Hive delimiter and null strings.
+sqoop export --connect jdbc:mysql://sandbox.hortonworks.com:3306/retail_db_sqoop --username root --password hadoop --table department_test --export-dir /apps/hive/warehouse/department_test --input-fields-terminated-by '\001' --input-null-string 'null' --input-null-non-string 'null' -m 1
