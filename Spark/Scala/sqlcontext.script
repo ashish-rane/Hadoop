@@ -1,0 +1,36 @@
+
+
+import org.apache.spark.sql.hive._;
+
+import org.apache.spark.sql._
+
+// For queryin hive tables we need to have hive-site.xml copied or linked into the /etc/spark/conf/ directory.
+// Create sqlContext if not available by creating HiveContext and pass the SparkContext to the constructor
+val sqlContext = new HiveContext(sc);
+
+val depRDD = sqlContext.sql("Select * from retail_db.departments");
+
+// need to call collect() on the RDD from SqlContext before calling any more functions.
+// In case of RDDs loaded from files the collect() was not necessary
+depRDD.collect().foreach(println);
+
+// Hive Context uses Hive metastore and can query hive tables.
+
+// But sometime we have structured data in files but no hive tables defined on top of this data.
+// In such cases we can a temp table on top of such data and query it using sql by using SQLContext.
+val ordersRDD = sc.textFile("/user/hive/warehouse/retail_db.db/orders");
+val ordersMap = ordersRDD.map(x => x.split(",");
+case class Orders(order_id: Int, order_date: String, order_customer_id:Int, order_status:String);
+val orders = ordersMap.map(o => Orders(o(0).toFloat, o(1), o(2).toInt, o(3));
+
+import sqlContext.createSchemaRDD
+orders.registerTempTable("orders");
+sqlContext.sql("Select * from orders");
+
+
+// SQL Context can be used to load json file as well.
+
+val depRDD = sqlContext.jsonFile("output/itversity/pig/departments_data.json/part-m-00000");
+val depRDD.registerTempTable("depTable");
+val depRec = sqlContext.sql("Select * from from depTable");
+

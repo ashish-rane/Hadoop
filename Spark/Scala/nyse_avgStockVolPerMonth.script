@@ -1,0 +1,9 @@
+val stocksRDD = sc.textFile("/user/cloudera/datafiles/itversity/nyse/nyse_2014.csv");
+
+val stocksKV = stocksRDD.map( x => { val parts = x.split(","); ( (parts(0), parts(1).substring(3, 11)), parts(6)  )   });
+
+val stocksagg = stocksKV.aggregateByKey( (0, 0) ) ( (acc,value) => { (acc._1 + value, acc._2 + 1)  }    , (acc, value) => { (acc._1 + value._1, acc._2 + value._2)  } );
+
+val stocksAvgMap = stocksagg.map(x => (x._1._1, x._1._2, x._2._1/x._2._2) );
+
+val stockssortedbymonth = stocksAvgMap.sortBy(x => x._2);

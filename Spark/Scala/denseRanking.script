@@ -1,0 +1,6 @@
+// Dense Ranking refers to the cases where if we want to say pick top 2 products by price but 
+// there might be more than 2 products that meet this criteria since many products may have the same price.
+// Normal ranking will globally sort the data and pick only first two.
+// Dense ranking will pick all the records with the top two prices. 
+
+

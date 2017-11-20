@@ -1,0 +1,48 @@
+
+case class Batting(player:String, year:Int, runs:Int);
+
+def parseRecord(rec: String):Batting = {
+
+	var parts = rec.split(",");
+	if(parts.length < 3){
+	 	parts = parts :+ "0";
+	}
+
+	Batting(parts(0),parts(1).toInt,parts(2).toInt);
+
+}
+
+def topNRuns(values: List[Batting], num: Int) : List[Batting] = {
+	
+	val runsList = values.map(v => v.runs).distinct.sortWith(_>_).take(num);
+	val result = for(x <- values if(runsList.contains(x.runs))) yield x;
+
+	return result;
+}
+
+
+
+val batting = sc.textFile("/user/cloudera/datafiles/common/lahman/batting.csv");
+val battingRDD = batting.map( x => { val p = parseRecord(x); ( (p.year, p.runs), p)  } );
+val battingRDDFilt = battingRDD.filter( x => x._1._2 > 0);
+
+val runsYear = battingRDDFilt.map(x => (x._2.year, x._2.runs));
+
+val maxRunsByYear = runsYear.reduceByKey( (acc, value) => { if(acc > value) acc else value   });
+val maxRunsByYearKV = maxRunsByYear.map(x => (x, x) );
+
+val joined = maxRunsByYearKV.join(battingRDDFilt);
+
+val playerMaxRunsPerYear = joined.map(x => (x._2._2.year, x._2._2.player, x._2._2.runs));
+val sorted = playerMaxRunsPerYear.sortBy(_._1);
+
+// dense ranking
+val battingRec = batting.map(x => parseRecord(x)).filter(x => x.runs > 0);
+
+val battingGrp = battingRec.groupBy(x => x.year);
+
+val maxRunsByYear = battingGrp.flatMapValues(x => topNRuns(x.toList, 1))
+val sorted = maxRunsByYear.sortByKey()
+
+sorted.collect().foreach(println)
+

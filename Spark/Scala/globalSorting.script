@@ -1,0 +1,45 @@
+val productRDD = sc.textFile("/user/hive/warehouse/retail_db.db/products");
+
+// Method 1:  using  sortByKey which first requires us to create K,V
+val productsKV = productRDD.map(x => { val parts = x.split(","); (parts(4).toFloat, x) })
+
+val sortedByPriceAsc = productsKV.sortByKey();
+sortedByPriceAsc.take(10).foreach(println);
+
+val sortedByPriceDesc = productsKV.sortByKey(false);
+sortedByPriceDesc.take(10).foreach(println);
+
+// Method 2: using top() Default descending
+
+// Desc by first field in the tuple (which could be the key if only K,V pair)
+ productsKV.top(5).foreach(println);
+//Desc by first field explicity specified
+productsKV.top(5)(Ordering[Float].on(x => x._1)).foreach(println);
+
+// Asc by first field, then second then third etc..
+productsKV.top(5)(Ordering[Float].reverse.on(x => x._1)).foreach(println);
+
+
+// Method 3: takeOrdered - opposite of top. Default Ascending
+
+// Default ASCending order with first field,then second and so on....
+productsKV.takeOrdered(5).foreach(println)
+
+// Descending order by field 1 only
+productsKV.takeOrdered(5)(Ordering[Float].reverse.on(x => x._1)).foreach(println) 
+
+// Order by non first field category ASC
+productRDD.map( x => {x.split(",") match { case Array(a,b,c,d,e,f) => (a,b.toInt,c,d,e,f) }}).takeOrdered(10)(Ordering[Int].on(x => x._2)).foreach(println);
+// Order by non-first field category DESC
+productRDD.map( x => {x.split(",") match { case Array(a,b,c,d,e,f) => (a,b.toInt,c,d,e,f) }}).top(10)(Ordering[Int].on(x => x._2)).foreach(println);
+
+
+// Sorting on multiple fields for example category ASC, PRICE DESC
+// Method 1: 
+// NOTE the -sign works only for numeric types
+// if we want the top priced products per category then we need not sort the categories itself as it is done below. Below is only for sorting by category ASC  nad then by price DESC.
+productRDD.map( x => {x.split(",") match { case Array(a,b,c,d,e,f) => (a,b.toInt,c,d,e.toFloat,f) }}).sortBy(x => (x._2, -x._5)).foreach(println);
+
+// Method 2: Because we can specify parameters in takeOrdered we can also use it to sort string types.
+val numProducts = productRDD.count();
+productRDD.map( x => {x.split(",") match { case Array(a,b,c,d,e,f) => (a,b.toInt,c,d,e.toFloat,f) }}).takeOrdered(numProducts.toInt)(Ordering[(Int,Float)].on(x => (x._2,-x._5))).foreach(println);

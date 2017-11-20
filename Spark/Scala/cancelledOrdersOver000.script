@@ -1,0 +1,27 @@
+val ordersRDD = sc.textFile("/user/hive/warehouse/retail_db.db/orders");
+val orderItemsRDD = sc.textFile("/user/hive/warehouse/retail_db.db/order_items");
+
+val ordersKV = ordersRDD.map( x => { val parts = x.split(","); parts match { case Array(a,b,c,d) => (a.toInt, (a,b,c,d)) } } );
+val orderItemsKV = orderItemsRDD.map ( x => { val parts = x.split(","); parts match { case Array(a,b,c,d,e,f) => (b.toInt, (a,b,c,d,e.toFloat,f) ) } } );
+
+val ordersCancelled = ordersKV.filter(x => x._2._4 == "CANCELED");
+
+val ordersJoin = ordersCancelled.join(orderItemsKV);
+
+val ordersMap = ordersJoin.map(x => (x._1, x._2._2._5));
+
+val ordersTotal = ordersMap.reduceByKey( (acc,value) => acc + value );
+
+val ordersCancelledover$1000 = ordersTotal.filter(x => x._2 > 1000.0);
+
+ordersCancelledover$1000.count();
+
+ordersCancelleidover$1000.collect().foreach(println);
+
+val orderOver$1000Join = ordersCancelledover$1000.join(ordersCancelled);
+
+val orderCancelledOver$1000Map = orderOver$1000Join.map(x => ( x._2._2, x._2._1);
+
+orderCancelledOver$1000Map.collect().foreach(println)
+
+

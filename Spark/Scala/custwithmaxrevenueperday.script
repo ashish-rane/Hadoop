@@ -1,0 +1,22 @@
+val ordersRDD = sc.textFile("/user/hive/warehouse/retail_db.db/orders");
+val orderItemsRDD = sc.textFile("/user/hive/warehouse/retail_db.db/order_items");
+
+val ordersKV = ordersRDD.map( x => { val parts = x.split(","); parts match { case Array(a,b,c,d) => (a.toInt,  (a, b.substring(0,10) ,c.toInt ,d)) } });
+val orderItemsKV = orderItemsRDD.map( x => { val parts = x.split(","); parts match { case  Array(a,b,c,d,e,f) => ( b.toInt, (a,b, c,d,e.toFloat, f)) } });
+
+// Join the datasets
+val ordersJoin = ordersKV.join(orderItemsKV);
+
+// we need for each order_date and each customer the subtotal so create a tuple(orderDate,cust) as key and subtotal as value
+val orderDateCustomerKV = ordersJoin.map(x => ( (x._2._1._2, x._2._1._3), x._2._2._5));
+
+// We get K,V where k = orderDate and customer id and total as value
+val revenuePerDayPerCustomer = orderDateCustomerKV.reduceByKey( (acc,value) => acc + value);
+
+//We change  the mappiong so that  We have key as order_date and value is tuple of cust id and revenue of this customer
+val orderDateCustRevMap  = revenuePerDayPerCustomer.map( x => (x._1._1, (x._1._2, x._2)));
+
+// we need to only find the max revenue generating customer for each day. This mean we need to group all Values for each date and then reduce to get max revenue
+val maxRevenuePerDay = orderDateCustRevMap.reduceByKey( (acc, value) => if(acc._2 > value._2) acc else value);
+
+maxRevenuePerDay.sortByKey().collect().foreach(println);

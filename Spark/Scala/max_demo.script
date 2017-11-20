@@ -1,0 +1,16 @@
+val orderItemsRDD = sc.textFile("/user/hive/warehouse/retail_db.db/order_items");
+
+val order_itemsKV = orderItemsRDD.map(x => { val parts = x.split(","); parts match { case Array(a, b, c, d, e, f) => (b, e.toFloat ) } })
+
+
+val ordersRevenue = order_itemsKV.reduceByKey( (x,y) => x + y);
+
+// The reduce function takes two parameter both of which are tuple(x,y) because our RDD contains a tuple
+val orderWithMaxRevenue =  ordersRevenue.reduce( (acc,value) => { if(acc._2 >= value._2) acc else value })
+
+// OR we can use sortBy in Desc and take topmost element
+val orderWithMaxRevenue = ordersRevenue.sortBy(x => x._2, false).take(1);
+
+// Or we can use top function
+val orderWithMaxRevenue = ordersRevenue.top(1)(Ordering[Float].on(x => x._2));
+

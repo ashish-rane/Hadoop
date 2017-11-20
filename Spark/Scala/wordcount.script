@@ -1,0 +1,50 @@
+
+val data = sc.textFile("/user/cloudera/datafiles/common/book.txt");
+// Each line is an element in the data, split each line which gives a collection and then flatten the collection.
+// Therefore use flatmap
+val words = data.flatMap(x => x.split(" "));
+
+// There is a readymade function for calculating the number of same values/tuples in the collection.
+words.countByValue();
+
+// for each word in the collection generate a tuple with word and 1
+val wordmap = words.map( x => (x,1));
+
+// Run a reduce by key method which first groups all values for same key (key, [val1, val2])...
+// then it will apply the passed in function which takes in a accumulator and value and applies the function and stores result to accumulator
+// In this case we will have ("word", [1,1,1...]) so if we specifiy in our function we want to add value to the accumulator it will add up all the ones 
+// and then store the key and the accumulator value in the resulting RDD.
+
+// NOTE: we should not use reduce() since it is used with collections with single element OR if we want to process teh tuple as a whole (not as k,v) 
+// reduce is  not used  with pairs for calculating per key results (like sum, avg, max, min) . So it can be used to do overall aggregates (sum,min,max)  on the collections which may be K,V pairs or tuples.
+
+val wc = wordmap.reduceByKey((acc,value)=> acc + value);
+// In this case if we wanted to find count of all words instead of count per word we could use
+val overallWC = wordmap.map(x => x._2).reduce((acc,val) => acc + val);
+val overallWC = words.count();
+
+// collect the results and print it
+wc.collect().foreach(println)
+
+// or collect and save
+wc.collect().saveAsTextFile("/user/cloudera/output/itversity/wc01");
+
+
+// OR using Group BY but this is not very performant. We should use GroupBy or GroupByKey only for grouping data and performing non-aggregates.
+// If we want to perform aggregations the reduce(single values) and reduceByKey (Pair)  should be used.
+val wordsgrp = words.groupBy(x => x);
+
+// find the count
+val wc = wordsgrp.map(x => (x._1, x._2.count(p => true)) )
+// OR use mapValues
+val wc = wordsgrp.mapValues( v => v.count(p => true));
+OR use countByKey
+val wc = wordsgrp.countByKey();
+
+// Or using groupByKey
+val wordmap = words.map(x => (x, 1));
+val wordsgrp = wordmap.groupByKey();
+val wc = wordsgrp.map(x => x._1, x._2.sum);
+OR wc = wordsgrp.mapValues(v => v.sum);
+
+wc.collect.saveAsTextFile("/user/cloudera/output/itversity/wc02");

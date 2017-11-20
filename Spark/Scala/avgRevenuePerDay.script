@@ -1,0 +1,42 @@
+val ordersRDD = sc.textFile("/user/hive/warehouse/retail_db.db/orders");
+val orderItemsRDD = sc.textFile("/user/hive/warehouse/retail_db.db/order_items");
+
+val ordersKV = ordersRDD.map( x => { val parts =  x.split(","); parts match {case  Array(a,b,c,d) => (a.toInt, (a,b.subString(0,10) ,c,d) )  }});
+
+val orderItemsKV =orderItemsRDD.map(x => { val parts = x.split(","); parts match { case  Array(a,b,c,d,e,f) => (b.toInt, ( a,b,c,d,e,f) ) } });
+
+
+val ordersJoined = ordersKV.join(orderItemsKV);
+
+// Generate Key Value Pairs where OrderDate, order_id is the key and subtotal is value
+val ordersJoinMap = ordersJoined.map(x => ( (x._2._1._2, x._1 ), x._2._2._5.toFloat   ) );
+
+ordersJoinMap.take(3).foreach(println)
+
+val revenuePerOrderMap = ordersJoinMap.reduceByKey( (acc, value) => acc + value); 
+
+val orderRevenueMap  = revenuePerOrderMap.map( x => (x._1._1, x._2) );	
+
+
+// Aggregate by key is a currying function in which the first paramter list takes the initial values. 
+// The second parameter list takes two parameter 1st is a combiner function and 2nd is the reducer function.
+// the aggregateByKey will first group all values for a key and then pass the combiner function initial value in accumulator and the values one by one into the value paramter.
+// Since the combiner outputs a tuple with key and value (in this case the value itself is a tuple).
+// so the reducer function will get the first tuple in the accumulator and the 2nd in values and then next one and so on...
+
+val revenueAggPerDay = orderRevenueMap.aggregateByKey( (0.0, 0) )( (acc, value) => {(acc._1 + value, acc._2 + 1)} , (acc,value) => {(acc._1 + value._1, acc._2 + value._2)} )
+
+// The value is a tuple with first field in tuple is sum of all revenue and 2nd is total number of orders for each key (order date). to get the average just divide first field with 2nd field
+val avgRevPerOrderPerDay = revenueAggPerDay.map(x => (x._1, x._2._1/x._2._2) );
+
+avgRevPerOrderPerDay.take(100).foreach(println);
+
+// 2013-12-03,589.2354134750366
+
+
+// Equivalent SQL query
+// SELECT order_date, AVG(order_total) as avgRevenue FROM 
+// 	(select o.order_id AS order_id, o.order_date AS order_date, SUM(oi.order_item_subtotal) as order_total 
+//	FROM orders o JOIN order_items oi ON o.order_id = oi.order_item_order_id 
+//	WHERE o.order_date LIKE '2013-12-03%' GROUP BY o.order_id, o.order_date) 
+// ordersRevenue GROUP BY order_date;

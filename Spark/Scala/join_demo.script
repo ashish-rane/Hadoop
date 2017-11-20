@@ -1,0 +1,38 @@
+
+val ordersRDD = sc.textFile("/user/hive/warehouse/retail_db.db/orders");
+val orderitemsRDD = sc.textFile("/user/hive/warehouse/retail_db.db/order_items");
+
+// In Spark, we have to generate a K,V pair in order to join. This is done by taking the field as the key and the whole record as value below.
+
+// In this example we are spliting csv to array and  converting array into a tuple of K,V
+//  where K is the field on which to join and  the V is a tuple of fields from teh record ( In this case we picked all fields but we can choose only few that we need for our problem)
+val ordersKV = ordersRDD.map(x => {val parts= x.split(',') ; parts match { case  Array(a,b,c,d) => (  a,  (a,b,c,d) ) }  } )
+val order_itemsKV = orderitemsRDD.map( x => { val parts = x.split(','); parts match { case Array(a,b,c,d,e,f) => ( b, (a, b, c, d, e,f))  } })
+
+// RDD[(String, ((String, String, String, String), (String, String, String, String, String, String)))]
+val join = ordersKV.join(order_itemsKV)
+
+val numOrdersByOrderId = join.countByKey();
+
+// Nested tuples is not considered as nesting and hence flatMap won't work
+val joinedRDD = ordersKV.join(order_itemsKV).map(x => (x._2._1._2, x._2._2._5.toFloat) );
+
+// Revenue per day..If we use reduce() we will passed in the whole record (K, Iterable(V) )  instead of just the values one by one 
+// and since this not a nested structure  we cannot find the per key totals;  
+// groupByKey is only used for grouping elements together based on a key inorder to do sorting of values within each key.
+
+// IMP: With reduceByKey() the spark framework pushes the values one by one into our function 
+// PUSH MODEL
+val revPerDay = joinedRDD.reduceByKey( (acc,value) => acc + value );
+revPerDay.collect();
+
+// Using reduce
+
+// this generates nested structure
+val grouped = joinedRDD.groupByKey();
+
+// with  mapValues() the spark framework provides our function with an Iterable, and its our responsibility to iterate through the elements or calculate any aggregates)
+// PULL MODEL
+val revPerDay = grouped.mapValues( v => v.sum);
+
+

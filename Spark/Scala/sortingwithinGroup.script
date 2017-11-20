@@ -1,0 +1,40 @@
+val productsRDD = sc.textFile("/user/hive/warehouse/retail_db.db/products");
+
+// 1.  Sorting within a Key using flatMapValues() and mapValues().
+// In this case we need to create K,V pairs and then groupByKey since flatMapValues() and mapValues() run on PairRDDs
+val productsKV = productsRDD.map(x => { x.split(",") match { case Array(a,b,c,d,e,f) => (b.toInt, (a,c,d,e.toFloat) ) } });
+val productsGroupCat = productsKV.groupByKey();
+
+// Call the flatMapValues which pass in the value (Iterable) of each key to our function so we can run the sort operation on it 
+
+// flatMapValues() will flatten the structure after executing our function on each key,value.
+val sortedByPricePerCatAsc =  productsGroupCat.flatMapValues(x => x.toList.sortBy(_._4));
+
+// Using mapValues() to create nested structure in instead of flat structure
+val sortedByPricePerCatDesc = productsGroupCat.mapValues(x => x.toList.sortBy(-_._4));
+
+// 2. Sorting within a Key using map and flatMap.
+// In this case we generate a single tuple and then use groupBy() to group by any field. 
+val productsKV = productsRDD.map(x => { x.split(",") match { case Array(a,b,c,d,e,f) => (a,b.toInt,c,d,e.toFloat)  } });
+val productsGroupCat = productsKV.groupBy(_._2);
+
+//The map() and flatMap() will pass each record to our function and hence we can refer to the value as _._index and call sortBy function on it.
+
+// flatMap() will flatten the structure after applying our function on all the records
+val sortedByPricePerCatAsc = productsGroupCat.flatMap(x =>  x._2.toList.sortBy(_._5)));
+
+// flatMap() will generate a nested structure
+val sortedByPricePerCatDesc = productsGroupCat.map(x => x._2.toList.sortBy(-_._5));
+
+// 2. Ranking within a key
+
+// For ranking we need to follow any of the above methods for sorting and call take(n) on the sorted List to get subset of values
+NOTE: the take(n) is called on the sorted list inside the map()/flatmap()/mapvalues(),flatMapValues() function and not after them.
+
+// ASC 
+val top3ProductsByPricePerCat = productsGroupCat.flatMapValues(x => x.toList.sortBy(_._4).take(3));
+//DESC - for numeric values add - sign in front of parameter to sortBy
+val top3ProductsByPricePerCat = productsGroupCat.flatMapValues(x => x.toList.sortBy(-_._4).take(3));
+
+
+ 

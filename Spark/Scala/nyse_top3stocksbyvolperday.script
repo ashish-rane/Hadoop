@@ -1,0 +1,18 @@
+// IMP: This has to be a case class in order to work properly
+case class Stock(symbol: String, trade_date: String, open: Float, high: Float, low: Float, close: Float, volume:Int) {
+
+	override def toString():String = {
+		
+		return "%s, %s, %.2f, %.2f, %.2f, %.2f, %d".format(symbol, trade_date, open, high, low, close, volume);
+
+	}
+}
+
+val stocks = sc.textFile("/user/cloudera/datafiles/itversity/nyse/nyse_2014.csv");
+val stocksRDD = stocks.map(x => { val parts = x.split(","); parts match { case Array(a,b,c,d,e,f,g) => new Stock(a,b,c.toFloat, d.toFloat, e.toFloat, f.toFloat, g.toInt)  }  });
+
+val groupByDate = stocksRDD.groupBy(_.trade_date);
+val sortedByDate = groupByDate.sortByKey();
+val top3stocksByVol = sortedByDate.flatMapValues(it => it.toList.sortBy(-_.volume).take(3));
+
+top3stocksByVol.take(100).foreach(println);

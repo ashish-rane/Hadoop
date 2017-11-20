@@ -1,0 +1,31 @@
+// mapPartitions() can be used as an alternative to map() & foreach(). 
+// mapPartitions() is called once for each Partition unlike map() & foreach() which is called for each element in the RDD. 
+// The main advantage being that, we can do initialization on Per-Partition basis instead of per-element basis(as done by map() & foreach())
+
+// Consider the case of Initializing a database. 
+// If we are using map() or foreach(), the number of times we would need to initialize will be equal to the no of elements in RDD. 
+// Whereas if we use mapPartitions(), the no of times we would need to initialize would be equal to number of Partitions
+
+// We get Iterator as an argument for mapPartition, through which we can iterate through all the elements in a Partition. 
+// NOTE : with map() function the records in the dataset get passed to our function automatically (PUSH model)
+// In case of MapPartitions() and mapPartitionsIndex() we get passed an iterator and its our responsibility to get the records from the iterator (PULL model)
+
+// mapPartitionsWithIndex(), is  similar to mapPartitions() but also provides an index to track the Partition Number
+
+// Parallelize is used to convert any normal Scala collection into partitioned RDD
+val colorsRDD = sc.parallelize(List("red", "green", "yellow","blue","pink", "black", "cyan", "orange"));
+
+// index - represents teh partition number
+// iterator - to iterate through the elements in the partition
+val mapped = colorsRDD.mapPartitionsWithIndex( (index, it) => {
+								println("Called in Partition -> " + index);
+								val mylist = it.toList;
+
+								// in normal case we would do the initialization (ex : open db connection)
+								mylist.map(x => x + " -> " + index).iterator
+
+							});
+
+
+map.collect().foreach(println);
+

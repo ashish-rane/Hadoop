@@ -1,0 +1,6 @@
+val ordersRDD = sc.textFile("/user/hive/warehouse/retail_db.db/orders");
+
+val ordersKV = sc.map(x => {val parts= x.split(',') ; parts match { Array(a,b,c,d) => (a,b,c,d) }  } )
+
+// Distinct Order Status values
+val order_status_val = ordersKV.map(x => x._2._4).distinct()

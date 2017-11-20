@@ -1,0 +1,9 @@
+
+
+val colors1 = sc.parallelize(List("Red", "Green", "Blue", "Cyan", "Magenta", "Yellow", "Orange"));
+val colors2 = sc.parallelize(List("Yellow", "Blue", "Pink", "Red", "Violet", "Purple"));
+
+
+val commonColors = colors1.intersection(colors2);
+
+val unionColors = colors1.union(colors2);
