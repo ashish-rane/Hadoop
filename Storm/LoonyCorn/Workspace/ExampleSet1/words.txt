@@ -1,0 +1,12 @@
+This
+is
+a
+temporary
+file
+for
+testing
+reading
+of
+file
+from
+Spout.

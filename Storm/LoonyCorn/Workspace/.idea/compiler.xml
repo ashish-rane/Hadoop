@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="DRPCDemo" />
+        <module name="ExampleSet1" />
+        <module name="ExampleSet2" />
+        <module name="ExampleSet3" />
+        <module name="flux-demo" />
+        <module name="FluxDemo" />
+        <module name="ReadyMadeBolts" />
+        <module name="TridentDemos" />
+        <module name="WordCount" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="DRPCDemo" target="1.8" />
+      <module name="ExampleSet1" target="1.8" />
+      <module name="ExampleSet2" target="1.8" />
+      <module name="ExampleSet3" target="1.8" />
+      <module name="flux-demo" target="1.8" />
+      <module name="FluxDemo" target="1.8" />
+      <module name="ReadyMadeBolts" target="1.8" />
+      <module name="TridentDemos" target="1.8" />
+      <module name="WordCount" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

@@ -1,0 +1,25 @@
+name: "yaml-fluxdemo-topology"
+config:
+  topology.workers: 1
+  topology.debug: true
+
+#spout configurations
+spouts:
+  - id: "spout-1"
+    className: "com.xpert.storm.fluxdemo.IntegerSpout"
+    parallelism: 1
+
+#bolt definitions
+bolts:
+  - id: "bolt-1"
+    className: "com.xpert.storm.fluxdemo.FileWriterBolt"
+    parallelism: 1
+
+# Stream definitions (topology groupings)
+streams:
+  - name: "spout-1 --> bolt-1" # name is not used (mainly for logging)
+    from: "spout-1"
+    to: "bolt-1"
+    grouping:
+      type: SHUFFLE
+

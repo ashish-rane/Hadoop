@@ -1,0 +1,81 @@
+name: "yaml-hdfs-write-and-properties"
+
+config:
+  topology.workers: 1
+  topology.debug: true
+  # custom properties
+  file-to-read: "${data-root}"
+
+# components are meant to be used as parameters to constructor, property setter and builder.
+components:
+  - id: "syncPolicy"
+    className: "org.apache.storm.hdfs.bolt.sync.CountSyncPolicy"
+    constructorArgs:
+      - 1000
+
+  - id: "fileNameFormat"
+    className: "org.apache.storm.hdfs.bolt.format.DefaultFileFormat"
+    configMethods:
+      - name: "withPath"
+        args: ["${hdfs.write.dir}"]
+      - name: "withExtension"
+        args: ["${hdfs.outputfile.extension}"]
+
+  - id: "recordFormat"
+    className: "org.apache.storm.hdfs.bolt.format.DelimitedRecordFormat"
+    configMethods:
+      - name: "withFieldDelimiter"
+        args: ["|"]
+
+  - id: "rotationPolicy"
+    className: "org.apache.storm.hdfs.bolt.rotation.FileRotationPolicy"
+    constructorArgs:
+      - 127
+      - MB
+
+
+# spout configuration
+spouts:
+  - id: "file-reader-spout"
+    className: "com.xpert.storm.fluxdemo.ReadFieldsSpout"
+    parallelism: 1
+
+# bolt configuration
+  - id: "filter-fields-bolt"
+    className: "org.xpert.storm.fluxdemo.FilterFieldsBolt"
+    parallelism: 2
+
+  - id: "hdfs-write-bolt"
+    className: "org.apache.storm.hdfs.bolt.HdfsBolt"
+    configMethods:
+      - name: "withConfigKey"
+        args: ["hdfs.config"]
+      - name: "withFsUrl"
+        args: ["${hdfs.url}"]
+      - name: "withFileNameFormat"
+        args: [ref: "fileNameFormat"]
+      - name: "withRecordFormat"
+        args: [ref: "recordFormat"]
+      - name: "withRotationPolicy"
+        args: [ref: "rotationPolicy"]
+      - name: "withSyncPolicy"
+        args: [ref: "syncPolicy"]
+      - name: "addRotationaAction"
+        args: [ref: "rotationAction"]
+    parallelism: 1
+
+# define topology
+streams:
+  - name: "File-Reader --> Filter Fields"
+    from: "file-reader-spout"
+    to: "filter-fields-bolt"
+    grouping:
+      type: SHUFFLE
+
+  - name: "Filter Fields --> HDFS Write"
+    from: "filter-fields-bolt"
+    to: "hdfs-write-bolt"
+    grouping:
+      type: SHUFFLE
+
+
